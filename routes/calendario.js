@@ -3,6 +3,6 @@ const express = require('express')
 
 const router = express.Router()
 
-router.get('/:curso/:mes', controller.obterCalendarioNivelMes)  // Retrieve (one)
+router.get('/:curso/:equipe/:mes', controller.obterCalendarioNivelMes)  // Retrieve (one)
 
 module.exports = router

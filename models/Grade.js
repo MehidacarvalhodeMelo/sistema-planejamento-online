@@ -6,8 +6,10 @@ const esquema = mongoose.Schema({
         required: true
     },
     eixo: {type: mongoose.ObjectId, ref: 'Eixo', required: true},
-    curso1: {type: mongoose.ObjectId, ref: 'Curso1', required: true},
-
+    equipe: {type: mongoose.ObjectId, ref: 'Equipe', required: true},
+    data_criacao:{
+        type: Date, default: Date.now
+    },
 })
 
 // PARÂMETROS DO mongoose.model()

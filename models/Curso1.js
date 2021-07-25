@@ -9,7 +9,13 @@ const esquema = mongoose.Schema({
         type: Number,
         required: true,
         default: 800    // Valor padrão
-    }
+    },
+    periodo: {
+        type: String,
+        required: true,
+        // Conjunto dos valores válidos
+        enum: ['Manhã', 'Tarde', 'Noite', 'Integral']
+    },
     
 })
 

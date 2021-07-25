@@ -26,6 +26,7 @@
 
 */
 
+var ObjectId = require('mongoose').Types.ObjectId;
 // Importar o model para dentro do controller
 const Equipe = require('../models/Equipe')
 
@@ -52,9 +53,7 @@ controller.listar = async (req, res) => {
         // find() sem parâmetros é para trazer tudo
         let dados = await Equipe.find()
         .populate('curso')//Dados completos
-        .populate('mestre', 'nome email')//Só nome email
         .populate('sala_aula')
-        .populate('atividades')
         //Dados completos
         res.send(dados) // Vai com status 200: OK
     }
@@ -67,12 +66,25 @@ controller.listar = async (req, res) => {
 // Método obterUm(), implementando a operação RETRIEVE (one)
 controller.obterUm = async (req, res) => {
     const id = req.params.id    // Capturando o parâmetro id
-    let obj = await Equipe.findById(id)
+    let obj = await Equipe.findById(id).populate('mestres')
 
     // Se o objeto vier preenchido (achou), então o retornamos
     if (obj) res.send(obj)
     // Senão (objeto vazio), enviamos o status HTTP 404: Not found
     else res.status(404).end()
+}
+
+controller.buscarPorCurso = async (req, res) => {
+    try {
+        const id = new ObjectId(req.params.id);    // Capturando o parâmetro id
+        // find() sem parâmetros é para trazer tudo
+        let dados = await Equipe.find({curso: id})
+        res.send(dados) // Vai com status 200: OK
+    }
+    catch (erro) {
+        console.error(erro)
+        res.status(500).send(erro)
+    }
 }
 
 // Método atualizar(), implementando a operação UPDATE

@@ -17,7 +17,7 @@ const esquema = mongoose.Schema({
     },
     files: [{url: String, name: String}],
     eixo: {type: mongoose.ObjectId, ref: 'Eixo', required: true},
-    curso: {type: mongoose.ObjectId, required: true},
+    curso: {type: mongoose.ObjectId, ref: 'Curso1', required: true},
     objetivo: {
         type: String,
         required: true

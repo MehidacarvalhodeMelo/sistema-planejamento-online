@@ -23,18 +23,20 @@ var getGrades = function(grades){
 controller.obterCalendarioNivelMes = async (req, res) => {
     try {
         const curso = new ObjectId(req.params.curso);
+        const equipe = new ObjectId(req.params.equipe)
         const mes_param = moment.utc(req.params.mes);
 
         // todas as atividades do nivel e do mes
         let dados_atividades = await Atividade.find({curso: curso, mes_aplicacao: mes_param}).populate('eixo').sort('data_criacao');
 
-        let dados_grade = await Grade.find({curso1: curso});
+        let dados_grade = await Grade.find({equipe: equipe}).sort('data_criacao');
 
         let grade = getGrades(dados_grade);
 
         let dias_do_mes = Array.from(Array(mes_param.daysInMonth()).keys());
 
         let calendario = [];
+        let order = 0;
 
         let atividades_ja_usadas = [];
         
@@ -54,7 +56,9 @@ controller.obterCalendarioNivelMes = async (req, res) => {
                                 date: dia.format('YYYY-MM-DD'),
                                 backgroundColor: atividade.eixo.cor,
                                 borderColor: atividade.eixo.cor,
+                                order: order
                             });
+                            order++;
                             return false;
                         }
 
