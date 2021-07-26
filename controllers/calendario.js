@@ -52,7 +52,7 @@ controller.obterCalendarioNivelMes = async (req, res) => {
                         if(atividade.eixo.id === materia && counts.length < parseInt(atividade.carga_horaria)){
                             atividades_ja_usadas.push(atividade.id);
                             calendario.push({ 
-                                title: atividade.titulo, 
+                                title: `${atividade.titulo}: ${atividade.objetivo}`, 
                                 date: dia.format('YYYY-MM-DD'),
                                 backgroundColor: atividade.eixo.cor,
                                 borderColor: atividade.eixo.cor,
