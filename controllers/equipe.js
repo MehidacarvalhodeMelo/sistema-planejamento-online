@@ -66,7 +66,7 @@ controller.listar = async (req, res) => {
 // Método obterUm(), implementando a operação RETRIEVE (one)
 controller.obterUm = async (req, res) => {
     const id = req.params.id    // Capturando o parâmetro id
-    let obj = await Equipe.findById(id).populate('mestres')
+    let obj = await Equipe.findById(id).populate('mestres').populate('curso')
 
     // Se o objeto vier preenchido (achou), então o retornamos
     if (obj) res.send(obj)

@@ -72,7 +72,7 @@ controller.listar = async (req, res) => {
 controller.buscarPorEquipe = async (req, res) => {
     
     const id = new ObjectId(req.params.id)   // Capturando o parâmetro id
-    let obj = await Aluno1.find({equipe: id}).populate({path: 'equipe'}).sort('nome');
+    let obj = await Aluno1.find({equipe: id}).populate({path: 'equipe', populate: { path: 'curso', model: 'Curso1' }}).sort('nome');
 
     // Se o objeto vier preenchido (achou), então o retornamos
     if (obj) res.send(obj)
