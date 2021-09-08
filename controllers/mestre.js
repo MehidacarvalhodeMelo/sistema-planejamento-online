@@ -28,14 +28,41 @@
 
 // Importar o model para dentro do controller
 const Mestre = require('../models/Mestre')
-
+const firebase = require("../config/firabase")
+const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = require('firebase/auth')
 const controller = {}       // Objeto vazio
-
+const auth = getAuth()
 // Método novo(), implementando a operação CREATE
+
+controller.logout = async (req, res) => {
+    try {
+       await signOut(auth)
+       return res.status(200).send("Usuário deslogado")
+    } catch (erro) {
+        console.error(erro)
+        res.status(500).send(erro)
+    }
+}
+
+controller.login = async (req, res) => {
+    try {
+        const mestre = await signInWithEmailAndPassword(auth, req.body.email, req.body.password)    
+        return res.status(200).send("Usuário logado")
+    } catch (erro) {
+        console.error(erro)
+        res.status(500).send(erro)
+    }
+    
+}
+
 controller.novo = async (req, res) => {
     try {
+        const userFirebase = await createUserWithEmailAndPassword(auth, req.body.email, req.body.password)
         // Envia os dados dentro de req.body para o BD para criação
-        await Mestre.create(req.body)
+        let userBody = req.body
+        userBody.UID_usuario = userFirebase.user.uid
+        
+        await Mestre.create(userBody)
         // HTTP 201: Created
         res.status(201).end()
     }
