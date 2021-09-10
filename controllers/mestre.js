@@ -46,8 +46,12 @@ controller.logout = async (req, res) => {
 
 controller.login = async (req, res) => {
     try {
-        const mestre = await signInWithEmailAndPassword(auth, req.body.email, req.body.password)    
-        return res.status(200).send("Usuário logado")
+        const mestre = await signInWithEmailAndPassword(auth, req.body.email, req.body.password)  
+        const user = await Mestre.find({ email:req.body.email }).exec()
+        return res.status(200).send({
+            Message: "Usuário logado",
+            professor: user[0].professor
+        })
     } catch (erro) {
         console.error(erro)
         res.status(500).send(erro)
@@ -61,7 +65,6 @@ controller.novo = async (req, res) => {
         // Envia os dados dentro de req.body para o BD para criação
         let userBody = req.body
         userBody.UID_usuario = userFirebase.user.uid
-        
         await Mestre.create(userBody)
         // HTTP 201: Created
         res.status(201).end()
