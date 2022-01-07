@@ -1,29 +1,46 @@
+
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
+var loginRouter = require('./routes/login')
 const db = require('./config/database')
+const firebase = require("./config/firabase")
+const { signInWithCustomToken } = require('firebase/auth');
 // const dbUser = process.env.DB_USER
 // const dbPass = process.env.DB_PASS
 // const dbName = 'planejamentoOnline'
 // console.log(dbUser, dbPass, dbName)
 // db(`mongodb://localhost/${dbName}?retryWrites=true&w=majority`)
 db(process.env.DB_URL)
-
 var app = express();
 
 const cors = require('cors');
 app.use(cors());
+
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/api/login', loginRouter)
+app.use( async (req, res, next) => {
+    const { jwt } = req.body
+    try {
+        const user = await signInWithCustomToken(jwt)  
+        res.send(user)
+    } catch (error) {
+        return {
+            message:"error true",
+            error: error
+        }
+    }
+    next()
+}
+)
 
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
@@ -104,7 +121,8 @@ app.use('/api/grade', grade)
 
 
 //Rota para calendario
-const calendario = require('./routes/calendario')
+const calendario = require('./routes/calendario');
+
 app.use('/api/calendario', calendario)
 
 module.exports = app;

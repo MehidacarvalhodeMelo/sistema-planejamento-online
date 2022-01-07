@@ -27,11 +27,18 @@
 */
 
 // Importar o model para dentro do controller
+const admin = require("firebase-admin");
+const serviceAccount = require("../escola-1fc41-firebase-adminsdk-ib6ed-1492878054.json");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://escola-1fc41-default-rtdb.firebaseio.com"
+});
 const Mestre = require('../models/Mestre')
 const firebase = require("../config/firabase")
-const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = require('firebase/auth')
+const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updatePassword } = require('firebase/auth')
 const controller = {}       // Objeto vazio
 const auth = getAuth()
+const uid = "some-uid"
 // Método novo(), implementando a operação CREATE
 
 controller.logout = async (req, res) => {
@@ -48,23 +55,23 @@ controller.login = async (req, res) => {
     try {
         const mestre = await signInWithEmailAndPassword(auth, req.body.email, req.body.password)  
         const user = await Mestre.find({ email:req.body.email }).exec()
+        const newToken = await admin.auth().createCustomToken(uid)
         return res.status(200).send({
             Message: "Usuário logado",
-            professor: user[0].professor
+            professor: user[0].professor,
+            jwt: newToken
         })
     } catch (erro) {
         console.error(erro)
         res.status(500).send(erro)
     }
-    
 }
 
 controller.novo = async (req, res) => {
     try {
         const userFirebase = await createUserWithEmailAndPassword(auth, req.body.email, req.body.password)
         // Envia os dados dentro de req.body para o BD para criação
-        let userBody = req.body
-        userBody.UID_usuario = userFirebase.user.uid
+        var userBody = req.body
         await Mestre.create(userBody)
         // HTTP 201: Created
         res.status(201).end()
@@ -123,7 +130,7 @@ controller.atualizar = async (req, res) => {
 controller.excluir = async (req, res) => {
     try {
         // Isolando o id para exclusão
-        const id = req.body._id
+        const id = req.params.id
         let obj = await Mestre.findByIdAndDelete(id)
 
         // Encontrou e excluiu
@@ -135,6 +142,28 @@ controller.excluir = async (req, res) => {
         console.error(erro)
         res.status(500).send(erro)
     }
+
+
+
+    controller.atualizarSenha = async (req, res) => {
+        const user = auth.currentUser
+        const { email, oldPassword, newPassword } = req.body
+        try {
+            await signInWithEmailAndPassword(auth, email, oldPassword)
+        } catch (error) {
+            return error
+        }
+        try {
+            const editPassword = await updatePassword(user, newPassword)
+            res.status(200).send(editPassword)
+        } catch (error) {
+            return error   
+        }
+
+    }
+
+
+
 }
 
 module.exports = controller
