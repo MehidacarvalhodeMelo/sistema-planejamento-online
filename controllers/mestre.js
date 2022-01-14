@@ -67,12 +67,13 @@ controller.login = async (req, res) => {
     }
 }
 
-controller.novo = async (req, res) => {
+controller.novo = async (req, res) => {    
     try {
-        const userFirebase = await createUserWithEmailAndPassword(auth, req.body.email, req.body.password)
+        const userFirebase = await createUserWithEmailAndPassword(auth, req.body.email, "s*@0VJAixp")
+        await Mestre.create(req.body)
         // Envia os dados dentro de req.body para o BD para criação
-        var userBody = req.body
-        await Mestre.create(userBody)
+        
+        
         // HTTP 201: Created
         res.status(201).end()
     }

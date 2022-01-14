@@ -27,20 +27,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/login', loginRouter)
-app.use( async (req, res, next) => {
-    const { jwt } = req.body
-    try {
-        const user = await signInWithCustomToken(jwt)  
-        res.send(user)
-    } catch (error) {
-        return {
-            message:"error true",
-            error: error
-        }
-    }
-    next()
-}
-)
 
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
