@@ -26,7 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/api/login', loginRouter)
+
 
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
@@ -34,7 +34,7 @@ app.use('/api/users', usersRouter);
 // Criação de uma nova rota
 const teste = require('./routes/teste')
 app.use('/api/teste', teste)
-
+app.use('/api/login', loginRouter)
 
 //Rota para curso1
 const curso1 = require('./routes/curso1')

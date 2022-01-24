@@ -28,14 +28,13 @@
 
 // Importar o model para dentro do controller
 const admin = require("firebase-admin");
-const serviceAccount = require("../escola-1fc41-firebase-adminsdk-ib6ed-1492878054.json");
+const serviceAccount = require("../config/escola-fabiano-pucci-de-lima-firebase-adminsdk-dmb2x-2cfd962d70.json");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://escola-1fc41-default-rtdb.firebaseio.com"
 });
 const Mestre = require('../models/Mestre')
 const firebase = require("../config/firabase")
-const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updatePassword } = require('firebase/auth')
+const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updatePassword, reauthenticateWithCredential } = require('firebase/auth')
 const controller = {}       // Objeto vazio
 const auth = getAuth()
 const uid = "some-uid"
@@ -107,23 +106,35 @@ controller.obterUm = async (req, res) => {
     // Senão (objeto vazio), enviamos o status HTTP 404: Not found
     else res.status(404).end()
 }
-
+controller.reautenticar = async (req,res) => {
+    const user = auth.currentUser
+    const credential = promptForCredentials()
+    await reauthenticateWithCredential(user, credential)
+    res.status(204).end()
+}
 // Método atualizar(), implementando a operação UPDATE
 controller.atualizar = async (req, res) => {
-    try {
-        // Isolar o _id do objeto para fins de busca
-        const id = req.body._id
-        // Busca o objeto pelo id e, encontrando-o, substitui o conteúdo por req.body
-        let obj = await Mestre.findByIdAndUpdate(id, req.body)
-
-        // Se encontrou e substituiu, retornamos HTTP 204: No content
-        if (obj) res.status(204).end()
-        // Caso contrário, retorna HTTP 404: Not found
-        else res.status(404).end()
-    }
-    catch (erro) {
-        console.error(erro)
-        res.status(500).end()
+    const user = auth.currentUser
+    const { newPassword, oldPassword, email } = req.body
+    if (newPassword) {
+        await updatePassword(user, newPassword)
+        res.status(204).end()
+    } else{
+        try {
+            // Isolar o _id do objeto para fins de busca
+            const id = req.body._id
+            // Busca o objeto pelo id e, encontrando-o, substitui o conteúdo por req.body
+            let obj = await Mestre.findByIdAndUpdate(id, req.body)
+    
+            // Se encontrou e substituiu, retornamos HTTP 204: No content
+            if (obj) res.status(204).end()
+            // Caso contrário, retorna HTTP 404: Not found
+            else res.status(404).end()
+        }
+        catch (erro) {
+            console.error(erro)
+            res.status(500).end()
+        }
     }
 }
 
@@ -142,25 +153,6 @@ controller.excluir = async (req, res) => {
     catch(erro) {
         console.error(erro)
         res.status(500).send(erro)
-    }
-
-
-
-    controller.atualizarSenha = async (req, res) => {
-        const user = auth.currentUser
-        const { email, oldPassword, newPassword } = req.body
-        try {
-            await signInWithEmailAndPassword(auth, email, oldPassword)
-        } catch (error) {
-            return error
-        }
-        try {
-            const editPassword = await updatePassword(user, newPassword)
-            res.status(200).send(editPassword)
-        } catch (error) {
-            return error   
-        }
-
     }
 
 
