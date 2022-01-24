@@ -22,6 +22,10 @@ const esquema = mongoose.Schema({
         type: String,
         required: true
     },
+    habilidade:{
+        type: String,
+        required: true
+    }
 })
 
 // PARÂMETROS DO mongoose.model()

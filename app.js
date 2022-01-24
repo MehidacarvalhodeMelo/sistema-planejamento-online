@@ -1,23 +1,25 @@
+
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
+var loginRouter = require('./routes/login')
 const db = require('./config/database')
+const firebase = require("./config/firabase")
+const { signInWithCustomToken } = require('firebase/auth');
 // const dbUser = process.env.DB_USER
 // const dbPass = process.env.DB_PASS
 // const dbName = 'planejamentoOnline'
 // console.log(dbUser, dbPass, dbName)
 // db(`mongodb://localhost/${dbName}?retryWrites=true&w=majority`)
 db(process.env.DB_URL)
-
 var app = express();
 
 const cors = require('cors');
 app.use(cors());
+
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -25,13 +27,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 
 // Criação de uma nova rota
 const teste = require('./routes/teste')
 app.use('/api/teste', teste)
-
+app.use('/api/login', loginRouter)
 
 //Rota para curso1
 const curso1 = require('./routes/curso1')
@@ -104,7 +107,8 @@ app.use('/api/grade', grade)
 
 
 //Rota para calendario
-const calendario = require('./routes/calendario')
+const calendario = require('./routes/calendario');
+
 app.use('/api/calendario', calendario)
 
 module.exports = app;

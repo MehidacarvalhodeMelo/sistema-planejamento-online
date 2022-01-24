@@ -11,7 +11,8 @@ const esquema = mongoose.Schema({
     endereco: { type: String, required: true },
     telefone: { type: String, required: true },
     // e-mail com índice único para evitar duplicidades
-    email: { type: String, required: true, index: { unique: true } }
+    email: { type: String, required: true, index: { unique: true } },
+    professor: { type:Boolean, default: false } 
 })
 
 // PARÂMETROS DO mongoose.model()
