@@ -142,7 +142,7 @@ controller.atualizar = async (req, res) => {
 controller.excluir = async (req, res) => {
     try {
         // Isolando o id para exclusão
-        const id = req.params.id
+        const id = req.body._id
         let obj = await Mestre.findByIdAndDelete(id)
 
         // Encontrou e excluiu
