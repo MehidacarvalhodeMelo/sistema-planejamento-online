@@ -34,7 +34,7 @@ admin.initializeApp({
 });
 const Mestre = require('../models/Mestre')
 const firebase = require("../config/firabase")
-const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updatePassword, reauthenticateWithCredential } = require('firebase/auth')
+const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updatePassword, reauthenticateWithCredential} = require('firebase/auth')
 const controller = {}       // Objeto vazio
 const auth = getAuth()
 const uid = "some-uid"
@@ -69,6 +69,8 @@ controller.login = async (req, res) => {
 controller.novo = async (req, res) => {    
     try {
         const userFirebase = await createUserWithEmailAndPassword(auth, req.body.email, "s*@0VJAixp")
+        let userPayload = req.body
+        userPayload.valor_hora_aula = Number.parseFloat(userPayload.valor_hora_aula)
         await Mestre.create(req.body)
         // Envia os dados dentro de req.body para o BD para criação
         
@@ -96,11 +98,23 @@ controller.listar = async (req, res) => {
     }
 }
 
+controller.getUid = async (req, res) => {
+    try {
+        const userInformations = await admin.auth().getUserByEmail(req.params.email)
+        const userUid = userInformations.uid
+        await admin.auth().deleteUser(userUid)
+        res.send(userUid)
+    } catch (error) {
+        res.send(error).status(404)
+    }
+}
+
+
+
 // Método obterUm(), implementando a operação RETRIEVE (one)
 controller.obterUm = async (req, res) => {
     const id = req.params.id    // Capturando o parâmetro id
     let obj = await Mestre.findById(id)
-
     // Se o objeto vier preenchido (achou), então o retornamos
     if (obj) res.send(obj)
     // Senão (objeto vazio), enviamos o status HTTP 404: Not found
@@ -137,7 +151,6 @@ controller.atualizar = async (req, res) => {
         }
     }
 }
-
 // Método excluir(), implementando a operação DELETE
 controller.excluir = async (req, res) => {
     try {
