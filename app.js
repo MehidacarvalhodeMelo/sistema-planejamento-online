@@ -7,8 +7,8 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var loginRouter = require('./routes/login')
 const db = require('./config/database')
-const firebase = require("./config/firabase")
-const { signInWithCustomToken } = require('firebase/auth');
+
+
 // const dbUser = process.env.DB_USER
 // const dbPass = process.env.DB_PASS
 // const dbName = 'planejamentoOnline'
