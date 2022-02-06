@@ -71,7 +71,7 @@ controller.novo = async (req, res) => {
         const userFirebase = await createUserWithEmailAndPassword(auth, req.body.email, "s*@0VJAixp")
         let userPayload = req.body
         userPayload.valor_hora_aula = Number.parseFloat(userPayload.valor_hora_aula)
-        await Mestre.create(req.body)
+        await Mestre.create(userPayload)
         // Envia os dados dentro de req.body para o BD para criação
         
         
