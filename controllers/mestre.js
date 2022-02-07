@@ -28,7 +28,7 @@
 
 // Importar o model para dentro do controller
 const admin = require("firebase-admin");
-const serviceAccount = require("../config/escola-fabiano-pucci-de-lima-firebase-adminsdk-dmb2x-2cfd962d70.json");
+const serviceAccount = require("../config/escola-fabiano-pucci-de-lima-firebase-adminsdk-dmb2x-2cfd962d70.json")
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
@@ -100,15 +100,23 @@ controller.listar = async (req, res) => {
 
 controller.getUid = async (req, res) => {
     try {
-        const userInformations = await admin.auth().getUserByEmail(req.params.email)
-        const userUid = userInformations.uid
-        await admin.auth().deleteUser(userUid)
-        res.send(userUid)
+        const userInformations = await admin.auth().getUserByEmail(req.params.email)        
+        res.status(200).send(JSON.stringify(userInformations.uid))
     } catch (error) {
         res.send(error).status(404)
     }
 }
 
+controller.deleteUserFirebase = async (req, res) => {
+    try {
+        const userUID = req.body.uid
+        await admin.auth().deleteUser(userUID)
+        res.status(204).end()
+    } catch (erro) {
+        console.error(erro)
+        res.status(500).send(erro)
+    }
+}
 
 
 // Método obterUm(), implementando a operação RETRIEVE (one)
@@ -138,7 +146,9 @@ controller.atualizar = async (req, res) => {
             // Isolar o _id do objeto para fins de busca
             const id = req.body._id
             // Busca o objeto pelo id e, encontrando-o, substitui o conteúdo por req.body
-            let obj = await Mestre.findByIdAndUpdate(id, req.body)
+            let userPayload = req.body
+            userPayload.valor_hora_aula = Number.parseFloat(userPayload.valor_hora_aula)
+            let obj = await Mestre.findByIdAndUpdate(id, userPayload)
     
             // Se encontrou e substituiu, retornamos HTTP 204: No content
             if (obj) res.status(204).end()
