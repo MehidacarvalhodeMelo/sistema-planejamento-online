@@ -33,7 +33,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 const Mestre = require('../models/Mestre')
-const firebase = require("../config/firabase")
+const firebase = require("../config/firebase")
 const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updatePassword, reauthenticateWithCredential} = require('firebase/auth')
 const controller = {}       // Objeto vazio
 const auth = getAuth()
