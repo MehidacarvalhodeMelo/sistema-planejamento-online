@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 module.exports = uri => {
     const localhost = "mongodb://localhost:27017"
-    mongoose.connect(localhost, {
+    mongoose.connect(uri, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useCreateIndex: true
